@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 6732488056113564853}
   - component: {fileID: 6732488056112467573}
   - component: {fileID: -1531352794236849135}
+  - component: {fileID: 3157605227698944165}
+  - component: {fileID: 1939243549217250994}
   m_Layer: 0
   m_Name: GroundTile
   m_TagString: Ground
@@ -94,3 +96,31 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -6405329427454715799, guid: c5e1c9427fc59724d863dad90df60c80, type: 3}
+--- !u!114 &3157605227698944165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6732488056110469301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+  originalLayer: 0
+  originalMaterials: []
+--- !u!114 &1939243549217250994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6732488056110469301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f74c75df33360740a9244cab312b564, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

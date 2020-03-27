@@ -18,16 +18,18 @@ public class WorldGenerator : MonoBehaviour
         RemoveOldGrid();
         CreateNewGrid();
         CreateBase();
+        CreatePlayer();
         CreateEnvironment();
 
        
     }
 
-    public void GenerateRocks()
+    private void Awake()
     {
-
+        GenerateGrid();
     }
 
+   
 
     void RemoveOldGrid()
     {
@@ -49,9 +51,9 @@ public class WorldGenerator : MonoBehaviour
 
         foreach (var item in GetComponentsInChildren<Transform>())
         {
-            if(item != this.transform)
+            if(item != transform)
             {
-                Destroy(item);
+                Destroy(item.gameObject);
             }
         }
     }
@@ -79,6 +81,12 @@ public class WorldGenerator : MonoBehaviour
     {
         Vector2Int baseTile = GroundTile.randomTile(gridSize);
         GroundTiles[baseTile.x, baseTile.y].addObstacle(Environment.Obsctacles.Base);
+    }
+
+    void CreatePlayer()
+    {
+        Vector2Int playerTile = GroundTile.randomTile(gridSize);
+        GroundTiles[playerTile.x, playerTile.y].addObstacle(Environment.Obsctacles.Yeti);
     }
 
     void CreateEnvironment()
@@ -157,6 +165,9 @@ namespace Mythical
                 case Obsctacles.Explorer:
                     _obsctalces.Add(new Explorer(this));
                     break;
+                case Obsctacles.Yeti:
+                    _obsctalces.Add(new Yeti(this));
+                    break;
                 default:
                     break;
             }
@@ -199,7 +210,7 @@ namespace Mythical
     {
         private string name;
         public string EnvironmentName { get { return name; } set { name = EnvironmentName; EnvironmentObject.name = name; } }
-        public enum Obsctacles {Rock, Tree, Base, Explorer};
+        public enum Obsctacles {Rock, Tree, Base, Explorer, Ground, Yeti};
 
         public GameObject EnvironmentObject;
 
@@ -213,9 +224,11 @@ namespace Mythical
         public GroundTile GroundParent;
 
         public Vector2 ObstaclePosition;
+
+        public float heightAboveGround = 0;
         private Vector3 SpawnPos()
         {
-            return new Vector3(ObstaclePosition.x, 0, ObstaclePosition.y);
+            return new Vector3(ObstaclePosition.x, heightAboveGround, ObstaclePosition.y);
         }
 
         public Obsctacles obstacleType;
@@ -235,6 +248,10 @@ namespace Mythical
                 case Obsctacles.Base:
                     _toSpawn = GameObjectReference.Base;
                     break;
+                case Obsctacles.Yeti:
+                    _toSpawn = GameObjectReference.Player;
+                    break;
+
                 default:
                     _toSpawn = GameObjectReference.Rock;
                     break;
@@ -297,18 +314,23 @@ namespace Mythical
     {      
         public Rock(Vector2 Pos, GroundTile parent)
         {
+            heightAboveGround = 1;
             obstacleType = Obsctacles.Rock;
             ObstaclePosition = Pos;
             GroundParent = parent;
             CreateObstacle();
+            
+            
         }
         public Rock(GroundTile parent)
         {
-            
+            heightAboveGround = 1;
             obstacleType = Obsctacles.Rock;      
             GroundParent = parent;
             CreateObstacle();
+           
             FindSuitablePosition(3);
+          
         }
 
     }
@@ -318,6 +340,7 @@ namespace Mythical
     {
         public Base(Vector2 Pos, GroundTile parent)
         {
+            heightAboveGround = 0f;
             obstacleType = Obsctacles.Base;
             ObstaclePosition = Pos;
             GroundParent = parent;
@@ -326,7 +349,7 @@ namespace Mythical
         public Base(GroundTile parent)
         {
             
-
+            heightAboveGround = 0f;
             obstacleType = Obsctacles.Base;
             ObstaclePosition = new Vector2(Random.Range(0, GroundTile.TileSize), Random.Range(0, GroundTile.TileSize));
             GroundParent = parent;
@@ -342,6 +365,7 @@ namespace Mythical
         public Tree(Vector2 Pos, GroundTile parent)
         {
             
+            heightAboveGround = 0.5f;
             obstacleType = Obsctacles.Tree;
             ObstaclePosition = Pos;
             GroundParent = parent;
@@ -349,11 +373,12 @@ namespace Mythical
         }
         public Tree(GroundTile parent)
         {
-          
+            heightAboveGround = 0.5f;
             obstacleType = Obsctacles.Tree;      
             GroundParent = parent;
             CreateObstacle();
             FindSuitablePosition(5);
+           
         }
 
 
@@ -382,14 +407,42 @@ namespace Mythical
         }
     }
 
+    public class Yeti : Obstacle
+    {
+        public Yeti(Vector2 Pos, GroundTile parent)
+        {
+            heightAboveGround = 3;
+            obstacleType = Obsctacles.Tree;
+            ObstaclePosition = Pos;
+            GroundParent = parent;
+            CreateObstacle();
+        }
+        public Yeti(GroundTile parent)
+        {
+            heightAboveGround = 3;
+            ObstaclePosition = new Vector2(Random.Range(0, GroundTile.TileSize), Random.Range(0, GroundTile.TileSize));
+            obstacleType = Obsctacles.Yeti;
+            GroundParent = parent;
+            CreateObstacle();
+            FindSuitablePosition(5);
+        }
+    }
+
     [System.Serializable]
     public static class GameObjectReference
     {
+
+        //environment 
         public static GameObject GroundTile = (GameObject)Resources.Load("EnvironmentObjects/GroundTile");
         public static GameObject Rock = (GameObject)Resources.Load("EnvironmentObjects/Rock");
         public static GameObject Tree = (GameObject)Resources.Load("EnvironmentObjects/Tree");
         public static GameObject Base = (GameObject)Resources.Load("EnvironmentObjects/Base");
         public static GameObject Explorer = (GameObject)Resources.Load("EnvironmentObjects/Explorer");
+        public static GameObject Stump = (GameObject)Resources.Load("EnvironmentObjects/Stump");
+        public static GameObject Player = (GameObject)Resources.Load("EnvironmentObjects/Player");
+
+        //inventory
+        public static GameObject SnowBall = (GameObject)Resources.Load("Inventory/SnowBall");
     }
 }
 

@@ -79,10 +79,10 @@
     <Compile Include="Assets\Packages\NavMeshComponents-master\Assets\Examples\Scripts\SpawnPrefabOnKeyDown.cs" />
     <None Include="Assets\Packages\NavMeshComponents-master\Assets\Examples\NavMeshComponentsExamples.asmdef" />
     <Reference Include="UnityEditor.UI">
-      <HintPath>C:/Development/GitHub/Unity/Staying Mythical 2/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+      <HintPath>C:/Development/GitHub/Unity/ojaypopedev/Staying Mythical 2/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>C:/Development/GitHub/Unity/Staying Mythical 2/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
+      <HintPath>C:/Development/GitHub/Unity/ojaypopedev/Staying Mythical 2/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.0f6/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

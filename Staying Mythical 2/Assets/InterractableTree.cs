@@ -9,7 +9,7 @@ public class InterractableTree : Interractable
     // Start is called before the first frame update
     void Start()
     {
-        setupInterractable(Environment.Obsctacles.Tree);
+        setupInterractable(Environment.Obstacles.Tree);
     }
 
     // Update is called once per frame

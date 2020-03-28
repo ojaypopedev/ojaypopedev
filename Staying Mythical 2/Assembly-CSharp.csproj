@@ -63,10 +63,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\DestroyAfterTime.cs" />
+    <Compile Include="Assets\ExplorerController.cs" />
+    <Compile Include="Assets\ExplorerManager.cs" />
     <Compile Include="Assets\Interractable.cs" />
     <Compile Include="Assets\InterractableGround.cs" />
     <Compile Include="Assets\InterractableRock.cs" />
     <Compile Include="Assets\InterractableTree.cs" />
+    <Compile Include="Assets\InventoryLog.cs" />
+    <Compile Include="Assets\Logs.cs" />
     <Compile Include="Assets\Packages\OutlineEffect\Demo\MaterialSwitcher.cs" />
     <Compile Include="Assets\Packages\OutlineEffect\Demo\OutlineAnimation.cs" />
     <Compile Include="Assets\Packages\OutlineEffect\Demo\Rotate.cs" />
@@ -75,8 +80,10 @@
     <Compile Include="Assets\Packages\OutlineEffect\Outline.cs" />
     <Compile Include="Assets\Packages\OutlineEffect\OutlineEffect.cs" />
     <Compile Include="Assets\Scripts\WorldGenerator.cs" />
+    <Compile Include="Assets\Snowball.cs" />
     <Compile Include="Assets\Stamina.cs" />
     <Compile Include="Assets\StayingMythical.cs" />
+    <Compile Include="Assets\Throw.cs" />
     <Compile Include="Assets\UI_Cursor.cs" />
     <Compile Include="Assets\UI_Inventory.cs" />
     <Compile Include="Assets\UI_Meter.cs" />

@@ -23,9 +23,15 @@ public class UI_Pose : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentState != controller.getMoveState())
+        if (controller.StaminaRecharing)
+        {
+            image.sprite = sprites[3];
+        }
+
+        if (currentState != controller.getMoveState())
         {
             currentState = controller.getMoveState();
+
             if(controller.StaminaRecharing)
             {
                 image.sprite = sprites[3];

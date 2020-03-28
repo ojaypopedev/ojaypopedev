@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Mythical;
 public class playerController : MonoBehaviour
 {
 
@@ -9,6 +9,7 @@ public class playerController : MonoBehaviour
     [SerializeField] Transform[] PosePoints;
     float[] lookMax = { -30, 80 };
     Transform head;
+    public Transform Head { get { return head; } }
     Rigidbody rb;
     readonly float[] speeds = { 2, 5, 10 };
     readonly float[] FOVS = { 55, 60, 90 };
@@ -19,8 +20,8 @@ public class playerController : MonoBehaviour
     float ignoreCollisionFrames = 0.5f;
     float ifnoreCollisionTotal;
 
-    float stamina = 2;
-    float staminaMax = 2;
+     float stamina = 4;
+   [SerializeField] float staminaMax = 5;
     bool staminaUsed = false;
     public bool StaminaRecharing { get { return staminaUsed; } }
 
@@ -33,13 +34,14 @@ public class playerController : MonoBehaviour
 
     private Interractable currentInterractableInView;
     public Interractable CurrentInteractable { get { return currentInterractableInView; } }
+   
     public enum MovementType { Crouch, Walk, Run};
     MovementType moveState = MovementType.Walk;
     public MovementType getMoveState() { return moveState; }
 
-    private InventoryObject inventory;
-    public void SetInventory(InventoryObject inventoryObject) { inventory = inventoryObject; }
-    public InventoryObject GetInventory() { return inventory; }
+    private InventoryObject inventoryObject;
+    public void SetInventory(InventoryObject inventoryObject) { this.inventoryObject = inventoryObject; }
+    public InventoryObject GetInventory() { return inventoryObject; }
 
     private void Start()
     {
@@ -51,9 +53,15 @@ public class playerController : MonoBehaviour
     void Update()
     {
         Look();
-        Collide();
+      
         Move();
         Interract();
+        UseItems();
+    }
+
+    private void FixedUpdate()
+    {
+        Collide();
     }
 
     void Look()
@@ -75,8 +83,13 @@ public class playerController : MonoBehaviour
     }
     void Move()
     {
+        if (stamina <= 0)
+        {
+            staminaUsed = true;
+        }
 
-        if(ignoreCollisionFrames > 0)
+
+        if (ignoreCollisionFrames > 0)
         {
             ignoreCollisionFrames -= Time.deltaTime;
         }
@@ -142,9 +155,17 @@ public class playerController : MonoBehaviour
         {
             if(isGrounded)
             {
-                movement += Vector3.up * 10;
-                isGrounded = false;
-
+                if(!StaminaRecharing)
+                {
+                    movement += Vector3.up * 10;
+                    isGrounded = false;
+                    stamina -= 2;
+                }
+                else
+                {
+                    FindObjectOfType<UI_Cursor>().ShowBan(0.5f);
+                }
+               
             }
             else
             {
@@ -180,17 +201,11 @@ public class playerController : MonoBehaviour
         }
         else
         {
-            
-        
-            
-
+   
             if (moveState == MovementType.Run)
             {
                 stamina -= Time.deltaTime;
-                if(stamina <= 0)
-                {
-                    staminaUsed = true;
-                }
+               
             }
             else
             {
@@ -227,24 +242,18 @@ public class playerController : MonoBehaviour
     {
         foreach (var col in collisions)
         {
-            if(col != null)
+            if (col != null)
             {
-                if(col.gameObject)
-                {
-                    if(col.gameObject.GetComponent<MeshCollider>())
-                    {
-                        if (col.gameObject.tag == "Ground")
-                        {
-                            if (ignoreCollisionFrames <= 0)
-                            {
-                                isGrounded = true;
-                            }
 
-                        }
+                if (col.gameObject.tag == "Ground")
+                {
+                    if (ignoreCollisionFrames <= 0)
+                    {
+                        isGrounded = true;
                     }
-                 
+
                 }
-               
+
             }
             
         }
@@ -320,19 +329,42 @@ public class playerController : MonoBehaviour
             }
         }
 
-
-
         if(currentInterractableInView)
         {
             interractionTimeTotal = currentInterractableInView.InterractionTime;
 
-            if(EDown)
+            if(EDown  && !StaminaRecharing)
             {
                 interractionTime+= Time.deltaTime;
-                print(InterractionPercentage) ;
+              
                 if(interractionTime >= interractionTimeTotal)
                 {
                     currentInterractableInView.Process();
+
+                    switch (currentInterractableInView.Type)
+                    {
+                        case Environment.Obstacles.Rock:
+                            stamina -= 4;
+                            break;
+                        case Environment.Obstacles.Tree:
+                            stamina -= 3;
+                            break;
+                        case Environment.Obstacles.Base:
+                            stamina = 0;
+                            break;
+                        case Environment.Obstacles.Explorer:
+                            stamina = 0;
+                            break;
+                        case Environment.Obstacles.Ground:
+                            stamina -= 1;
+                            break;
+                        case Environment.Obstacles.Yeti:
+                            stamina = 0;
+                            break;
+                        default:
+                            break;
+                    }
+                   
                     interractionTime = 0;
                 }
             }
@@ -352,7 +384,83 @@ public class playerController : MonoBehaviour
 
 
     }
+ 
+    void UseItems()
+    {
 
+        if (inventoryObject != null)
+        {
+            if (inventoryObject.Type == InventoryObject.InventoryObjectType.Logs)
+            {
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                   
+                    if(!StaminaRecharing)
+                    {
+                        GameObject usedObject = inventoryObject.Create();
+                        usedObject.GetComponent<Logs>().SetLogUse(InventoryObject.LogUse.Fire);
+                        inventoryObject = null;
+                        stamina -= 2;
+
+                    }
+                    else
+                    {
+                        FindObjectOfType<UI_Cursor>().ShowBan(0.5f);
+                    }
+                   
+                }
+
+                if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    if(!StaminaRecharing)
+                    {
+                        GameObject usedObject = inventoryObject.Create();
+                        usedObject.GetComponent<Logs>().SetLogUse(InventoryObject.LogUse.Trap);
+                        inventoryObject = null;
+                        stamina -= 2;
+                    }
+                    else
+                    {
+                        FindObjectOfType<UI_Cursor>().ShowBan(0.5f);
+                    }
+                   
+                }
+
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+
+                if(!StaminaRecharing)
+                {
+                    if (inventoryObject.Type == InventoryObject.InventoryObjectType.Snow || inventoryObject.Type == InventoryObject.InventoryObjectType.RockPiece)
+                    {
+                        GameObject usedObject = inventoryObject.Create();
+                        usedObject.GetComponent<Rigidbody>().AddForce(head.forward * 2000 + Vector3.up * 200);
+                        usedObject.GetComponent<Rigidbody>().AddTorque(Random.onUnitSphere);
+
+                        if(inventoryObject.Type == InventoryObject.InventoryObjectType.Snow)
+                        {
+                            stamina -= 1;
+                        }
+                        else
+                        {
+                            stamina -= 2;
+                        }
+                    }
+
+                    inventoryObject = null;
+                }
+                else
+                {
+                    FindObjectOfType<UI_Cursor>().ShowBan(0.5f);
+                }
+               
+
+            }
+        }
+       
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -363,23 +471,36 @@ public class playerController : MonoBehaviour
     }
     private void OnCollisionExit(Collision collision)
     {
-        if (collisions.Contains(collision))
-        {
-            collisions.Remove(collision);
-        }
-    }
 
+        for (int i = 0; i < collisions.Count; i++)
+        {
+            if(collision.gameObject == collisions[i].gameObject)
+            {
+                collisions.Remove(collisions[i]);
+            }
+        }    
+        
+    }
     public void DestroyAndRemoveFromCollisions(GameObject toRemove)
     {
-        foreach (var item in collisions)
+
+        int indexFound = -1;
+        for (int i = 0; i < collisions.Count; i++)
         {
-            if(item.gameObject == toRemove)
+            if(collisions[i].gameObject == toRemove)
             {
-                collisions.Remove(item);
-                Destroy(toRemove);
-                return;
+                indexFound = i;
+                break;
             }
+
         }
+
+        if(indexFound != -1)
+        {
+            collisions.RemoveAt(indexFound);
+            Debug.Log("Removed " + toRemove.name);
+        }
+
 
         Debug.LogWarning(toRemove.name + " not found in collisions, destroying anyway.");
         Destroy(toRemove);
@@ -390,13 +511,22 @@ public class playerController : MonoBehaviour
 
 public class InventoryObject
 {
-    public enum InventoryObjectTypes { SnowBall, RockPiece, Logs, Trap};
+    public enum InventoryObjectType { Snow, RockPiece, Logs, Trap};
+    public enum LogUse { Fire, Trap};
 
-    private InventoryObjectTypes type;
+    private InventoryObjectType type;
 
-    public InventoryObject(InventoryObjectTypes type)
+
+
+    public InventoryObject(InventoryObjectType type)
     {
         this.type = type;
+    }
+
+    public InventoryObjectType Type
+
+    {
+        get { return type; }
     }
 
     public override string ToString()
@@ -404,21 +534,42 @@ public class InventoryObject
         return type.ToString();
     }
 
-    public void Use()
+    public GameObject Create()
     {
+        GameObject spawnedObject = null;
+
         switch (type)
         {
-            case InventoryObjectTypes.SnowBall:
+            
+            case InventoryObjectType.Snow:
+            {
+                
+                spawnedObject = Object.Instantiate(GameObjectReference.SnowBall, StayingMythical.player.Head.position + StayingMythical.player.Head.transform.forward, Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)), null);
                 break;
-            case InventoryObjectTypes.RockPiece:
+         
+            }
+
+
+            case InventoryObjectType.RockPiece:
+            {
+                spawnedObject = Object.Instantiate(GameObjectReference.RockPiece, StayingMythical.player.Head.position + StayingMythical.player.Head.transform.forward, Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)), null);
                 break;
-            case InventoryObjectTypes.Logs:
+            }
+
+            case InventoryObjectType.Logs:
+            {
+
+                spawnedObject = Object.Instantiate(GameObjectReference.Logs, StayingMythical.player.transform.position + StayingMythical.player.transform.forward*2, Quaternion.identity, null);   
                 break;
-            case InventoryObjectTypes.Trap:
-                break;
+            }
+
+
             default:
+                Debug.LogWarning(type.ToString() + " does not have a Use() assigned.");
                 break;
         }
+
+        return spawnedObject;
     }
     
 }

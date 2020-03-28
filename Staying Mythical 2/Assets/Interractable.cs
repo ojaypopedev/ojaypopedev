@@ -6,19 +6,44 @@ using Mythical;
 public class Interractable : MonoBehaviour
 {
 
-    Environment.Obsctacles type;
+    Environment.Obstacles type;
+    public Environment.Obstacles Type { get { return type; } }
     playerController player;
     Outline outline;
     float interractionTime;
     public float InterractionTime { get { return interractionTime; } }
     public InventoryObject InventoryObject;
 
-    public void setupInterractable(Environment.Obsctacles type)
+    public void setupInterractable(Environment.Obstacles type)
     {
         outline = GetComponent<Outline>();
         this.type = type;
         outline.enabled = false;
-        interractionTime = 3;
+        switch (type)
+        {
+            case Environment.Obstacles.Rock:
+                interractionTime = 3;
+                break;
+            case Environment.Obstacles.Tree:
+                interractionTime = 5;
+                break;
+            case Environment.Obstacles.Base:
+                interractionTime = 100;
+                break;
+            case Environment.Obstacles.Explorer:
+                interractionTime = 100;
+                break;
+            case Environment.Obstacles.Ground:
+                interractionTime = 1;
+                break;
+            case Environment.Obstacles.Yeti:
+                interractionTime = 100;
+                break;
+            default:
+                interractionTime = 1;
+                break;
+        }
+        
         player = StayingMythical.player;
 
         InventoryObject = getInventoryObject(type);
@@ -48,24 +73,24 @@ public class Interractable : MonoBehaviour
         Debug.Log(type.ToString() + "has been processed.");
     }
 
-    public InventoryObject getInventoryObject(Environment.Obsctacles type)
+    public InventoryObject getInventoryObject(Environment.Obstacles type)
     {
         switch (type)
         {
-            case Environment.Obsctacles.Rock:
-                return new InventoryObject(InventoryObject.InventoryObjectTypes.RockPiece);
+            case Environment.Obstacles.Rock:
+                return new InventoryObject(InventoryObject.InventoryObjectType.RockPiece);
                
-            case Environment.Obsctacles.Tree:
-                return new InventoryObject(InventoryObject.InventoryObjectTypes.Logs);
+            case Environment.Obstacles.Tree:
+                return new InventoryObject(InventoryObject.InventoryObjectType.Logs);
               
-            case Environment.Obsctacles.Base:
+            case Environment.Obstacles.Base:
                 return null;
                 
-            case Environment.Obsctacles.Explorer:
+            case Environment.Obstacles.Explorer:
                 return null;
 
-            case Environment.Obsctacles.Ground:
-                return new InventoryObject(InventoryObject.InventoryObjectTypes.SnowBall);
+            case Environment.Obstacles.Ground:
+                return new InventoryObject(InventoryObject.InventoryObjectType.Snow);
 
             default:
                 return null;

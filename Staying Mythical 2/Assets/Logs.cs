@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using StayingMythical.Reference;
 public class Logs : MonoBehaviour
 {
 
@@ -11,10 +11,10 @@ public class Logs : MonoBehaviour
         switch (use)
         {
             case InventoryObject.LogUse.Fire:
-                Instantiate(Mythical.GameObjectReference.Fire, transform.position, Quaternion.identity, null);               
+                Instantiate(GameResources.Fire, transform.position, Quaternion.identity, null);               
                 break;
             case InventoryObject.LogUse.Trap:
-                Instantiate(Mythical.GameObjectReference.Trap, transform.position, Quaternion.Euler(-90,0,0), null);
+                Instantiate(GameResources.Trap, transform.position, Quaternion.Euler(-90,0,0), null);
                 break;
             default:
                 break;

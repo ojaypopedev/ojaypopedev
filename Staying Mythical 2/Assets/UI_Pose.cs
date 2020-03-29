@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using StayingMythical.Reference;
 public class UI_Pose : MonoBehaviour
 {
     playerController controller;
@@ -15,7 +15,7 @@ public class UI_Pose : MonoBehaviour
 
     void Start()
     {
-        controller = StayingMythical.player;
+        controller = GameObjects.player;
         image = GetComponent<Image>();
         col = image.color;
     }

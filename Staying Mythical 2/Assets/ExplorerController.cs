@@ -1,191 +1,140 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mythical;
+using StayingMythical;
 using UnityEngine.AI;
+using cakeslice;
+using StayingMythical.ExplorerTask;
+using StayingMythical.Reference;
 
 public class ExplorerController : MonoBehaviour
 {
 
     [SerializeField] Task currentTask;
     [SerializeField] List<Task> taskList = new List<Task>();
-    public Transform testTransform;
+    //  public Transform testTransform;
+    bool alive = true;
+
 
     NavMeshAgent explorer;
+    Animator anim;
     public NavMeshAgent agent { get { return explorer; } }
 
+    public GameObject FOV;
+    public Outline outline;
+    Outline FOVOutline;
+        
     private void Awake()
     {
+       
+        FOVOutline = FOV.GetComponent<Outline>();
+       anim = GetComponent<Animator>();
        explorer = GetComponent<NavMeshAgent>();
-
+        anim.SetFloat("MoveSpeed", 0);
+        
+    }
+    private void Start()
+    {
+        OutlineObject(false);
     }
     void Update()
-    {       
+    {
 
-       if(currentTask.Complete)
-       {
+        
+        if (alive)
+        {
            
-            if (taskList.Count > 0)
+            if (!explorer.isStopped)
             {
-                currentTask = taskList[0];
-                taskList.RemoveAt(0);
-             
-
+                anim.SetFloat("MoveSpeed", explorer.speed);
             }
             else
             {
-                return;
+                anim.SetFloat("MoveSpeed", 0);
             }
-       
-       }
-       else
-       {
-            if(currentTask.location != null && currentTask.owner != null)
+
+            if (currentTask != null)
             {
-                currentTask.UpdateTask();
+                
+                if (currentTask.Complete)
+                {
+                    if (taskList.Count > 0)
+                    {
+                        currentTask = taskList[0];
+                        taskList.RemoveAt(0);
+                       
+                    }
+
+                }
+                else
+                {
+                    currentTask.UpdateTask();
+                }
             }
             else
             {
-                currentTask.CompleteTask();
+                if (taskList.Count > 0)
+                {
+                    currentTask = taskList[0];
+                    taskList.RemoveAt(0);
+
+                }
             }
-           
 
-       }
+        }
+        else
+        {
 
-     
+        }
       
 
+    }
+
+    public void SetAnimation(string state)
+    {
+        anim.SetTrigger(state);
     }
 
     public void addTask(Task task)
     {
         taskList.Add(task);
     }
-}
 
-
-
-[System.Serializable]
-public class Task
-{
-    private readonly float reachedDistance = 3;
-
-    public Transform location;
-    public ExplorerController owner;
-
-    bool complete = false;
-    public bool Complete { get { return complete; } }
-    public void CompleteTask()
+    public void KillExplorer()
     {
-        currentState = TaskState.Complete;
-        complete = true;
+        transform.LookAt(GameObjects.player.transform);
+
+        alive = false;
+        Destroy(explorer); 
+        anim.SetTrigger("Die");
+        OutlineObject(false);
+        Destroy(FOV);
     }
 
-    public enum TaskState { Travel, Action, Complete, Special}
+    private void OnTriggerEnter (Collider collision)
+    {
+       
+        if(collision.gameObject.GetComponent<InventoryRock>())
+        {
+            Destroy(collision.gameObject);
+            KillExplorer();
+        }
+    }
+   
+    public void OutlineObject(bool active)
+    {
+        
+        if(FOVOutline)
+        {
+            FOVOutline.GetComponent<MeshRenderer>().enabled = active;
+            FOVOutline.enabled = active;
+
+        }
+        outline.enabled = active;
+    }
     
-    [SerializeField] private TaskState currentState = TaskState.Travel;
-    public TaskState State { get { return currentState; } }
-
-    public virtual void UpdateTask()
-    {
-
-      
-       if(owner.agent)
-        {
-            if (currentState == TaskState.Travel)
-            {
-
-                owner.agent.isStopped = false;
-                owner.agent.SetDestination(location.position);
-
-                if (Vector3.Distance(location.position, owner.transform.position) < reachedDistance)
-                {
-                    currentState = TaskState.Action;
-                }
-
-            }
-
-            if (currentState == TaskState.Complete)
-            {
-                owner.agent.isStopped = true;
-
-                complete = true;
-            }
-
-            if (currentState == TaskState.Action)
-            {
-                owner.agent.isStopped = true;
-            }
-
-        }
-
-    }
-
 }
-[System.Serializable]
-public class GoTo : Task
-{  
-    public GoTo(Transform Target, ExplorerController owner)
-    {
-        this.owner = owner;
-        location = Target;
-    }
 
-
-    public override void UpdateTask()
-    {
-        if (State == TaskState.Action)
-        {
-            CompleteTask();
-
-        }  
-
-        base.UpdateTask();
-
-    }
-}
-[System.Serializable]
-public class Process: Task
-{
-    private Environment.Obstacles targetType;
-
-    public Process(Environment.Obstacles Target, ExplorerController owner)
-    {
-        this.owner = owner;
-        targetType = Target;
-        FindObjectToProcess();
-    }
-
-    void FindObjectToProcess()
-    {
-
-        foreach (var item in Object.FindObjectsOfType<Interractable>())
-        {
-            if (item.Type == targetType)
-            {
-                location = item.transform;
-                break;
-            }
-        }
-    }
-
-    public override void UpdateTask()
-    {
-        if (State == TaskState.Action)
-        {
-
-        }
-
-        if (State == TaskState.Special)
-        {
-
-        }
-
-        base.UpdateTask();
-
-    }
-
-}
 
 
 

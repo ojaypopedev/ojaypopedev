@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mythical;
+using StayingMythical.Environment;
+using StayingMythical.Reference;
 public class playerController : MonoBehaviour
 {
 
@@ -33,8 +34,9 @@ public class playerController : MonoBehaviour
     public float StaminaPercentage { get { return stamina / staminaMax; } }
 
     private Interractable currentInterractableInView;
+    private ExplorerController currentExplorerInView;
     public Interractable CurrentInteractable { get { return currentInterractableInView; } }
-   
+    public Interractable CurrentExplorer { get { return currentInterractableInView; } }
     public enum MovementType { Crouch, Walk, Run};
     MovementType moveState = MovementType.Walk;
     public MovementType getMoveState() { return moveState; }
@@ -43,8 +45,11 @@ public class playerController : MonoBehaviour
     public void SetInventory(InventoryObject inventoryObject) { this.inventoryObject = inventoryObject; }
     public InventoryObject GetInventory() { return inventoryObject; }
 
+    public LayerMask raycastMask;
     private void Start()
     {
+
+
         Cursor.lockState = CursorLockMode.Locked;
         head = GetComponentInChildren<Camera>().transform;
         rb = GetComponent<Rigidbody>();
@@ -178,7 +183,7 @@ public class playerController : MonoBehaviour
 
             if (staminaUsed)
             {
-                stamina += Time.deltaTime / 2f;
+                stamina += Time.deltaTime;
                 if (stamina >= staminaMax)
                 {
                     stamina = staminaMax;
@@ -211,7 +216,7 @@ public class playerController : MonoBehaviour
             {
                 if (staminaUsed)
                 {
-                    stamina += Time.deltaTime / 3f;
+                    stamina += Time.deltaTime / 1.5f;
                     if (stamina >= staminaMax)
                     {
                         stamina = staminaMax;
@@ -266,16 +271,16 @@ public class playerController : MonoBehaviour
 
         Ray ray = Camera.main.ScreenPointToRay(Camera.main.pixelRect.size / 2);
         RaycastHit hit;
-        Physics.Raycast(ray, out hit,interractionDistance);
 
-        if(hit.collider)
+        Physics.Raycast(ray, out hit,interractionDistance,raycastMask);
+        if (hit.collider)
         {
-            if(hit.collider.gameObject.GetComponent<Interractable>())
+            if (hit.collider.gameObject.GetComponent<Interractable>())
             {
 
                 if (hit.collider.gameObject.GetComponent<Interractable>() is InterractableGround)
                 {
-                    if(Vector3.Distance(hit.point, head.position) < 2f)
+                    if (Vector3.Distance(hit.point, head.position) < 2f)
                     {
                         if (currentInterractableInView != null)
                         {
@@ -307,8 +312,8 @@ public class playerController : MonoBehaviour
                     currentInterractableInView = hit.collider.gameObject.GetComponent<Interractable>();
                     currentInterractableInView.OutlineObject(true);
                 }
-             
-             
+
+
             }
             else
             {
@@ -329,7 +334,41 @@ public class playerController : MonoBehaviour
             }
         }
 
-        if(currentInterractableInView)
+
+        Physics.Raycast(ray, out hit, 20, raycastMask, QueryTriggerInteraction.Collide);
+        if (hit.collider)
+        {
+            if (hit.collider.gameObject.GetComponent<ExplorerController>())
+            {
+                if (currentExplorerInView != null)
+                {
+                    currentExplorerInView.OutlineObject(false);
+                    currentExplorerInView = null;
+                }
+
+                currentExplorerInView = hit.collider.gameObject.GetComponent<ExplorerController>();
+                currentExplorerInView.OutlineObject(true);
+            }
+            else
+            {
+                if (currentExplorerInView != null)
+                {
+                    currentExplorerInView.OutlineObject(false);
+                    currentExplorerInView = null;
+                }
+            }
+        }
+        else
+        {
+            if (currentExplorerInView != null)
+            {
+                currentExplorerInView.OutlineObject(false);
+                currentExplorerInView = null;
+            }
+        }
+
+
+        if (currentInterractableInView)
         {
             interractionTimeTotal = currentInterractableInView.InterractionTime;
 
@@ -380,6 +419,11 @@ public class playerController : MonoBehaviour
         else
         {
             interractionTime = 0;
+        }
+
+        if(currentExplorerInView)
+        {
+            //do stuff here
         }
 
 
@@ -544,7 +588,7 @@ public class InventoryObject
             case InventoryObjectType.Snow:
             {
                 
-                spawnedObject = Object.Instantiate(GameObjectReference.SnowBall, StayingMythical.player.Head.position + StayingMythical.player.Head.transform.forward, Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)), null);
+                spawnedObject = Object.Instantiate(GameResources.SnowBall, GameObjects.player.Head.position + GameObjects.player.Head.transform.forward, Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)), null);
                 break;
          
             }
@@ -552,14 +596,14 @@ public class InventoryObject
 
             case InventoryObjectType.RockPiece:
             {
-                spawnedObject = Object.Instantiate(GameObjectReference.RockPiece, StayingMythical.player.Head.position + StayingMythical.player.Head.transform.forward, Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)), null);
+                spawnedObject = Object.Instantiate(GameResources.RockPiece, GameObjects.player.Head.position + GameObjects.player.Head.transform.forward, Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360)), null);
                 break;
             }
 
             case InventoryObjectType.Logs:
             {
 
-                spawnedObject = Object.Instantiate(GameObjectReference.Logs, StayingMythical.player.transform.position + StayingMythical.player.transform.forward*2, Quaternion.identity, null);   
+                spawnedObject = Object.Instantiate(GameResources.Logs, GameObjects.player.transform.position + GameObjects.player.transform.forward*2, Quaternion.identity, null);   
                 break;
             }
 

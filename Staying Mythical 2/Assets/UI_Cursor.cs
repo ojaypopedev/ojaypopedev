@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
+using StayingMythical.Reference;
 public class UI_Cursor : MonoBehaviour
 {
 
@@ -14,7 +14,7 @@ public class UI_Cursor : MonoBehaviour
     void Start()
     {
         anim = GetComponent<Animator>();
-        player = StayingMythical.player;
+        player = GameObjects.player;
        
     }
 

@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mythical;
+using StayingMythical.Reference;
 
 public class Snowball : MonoBehaviour
 {
 
     private void OnCollisionEnter(Collision collision)
     {
-        Instantiate(GameObjectReference.SnowParticles, transform.position, Quaternion.identity, null);
-        StayingMythical.player.DestroyAndRemoveFromCollisions(gameObject);
+        Instantiate(GameResources.SnowParticles, transform.position, Quaternion.identity, null);
+        GameObjects.player.DestroyAndRemoveFromCollisions(gameObject);
 
     }
 }

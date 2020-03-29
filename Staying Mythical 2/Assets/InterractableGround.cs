@@ -7,7 +7,7 @@ public class InterractableGround : Interractable
     // Start is called before the first frame update
     void Start()
     {
-        setupInterractable(Mythical.Environment.Obstacles.Ground);
+        setupInterractable(StayingMythical.Environment.Environment.Obstacles.Ground);
     }
 
 

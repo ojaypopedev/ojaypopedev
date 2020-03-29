@@ -96,6 +96,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee79184e9252e24c811a71dffac02e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Models:
+  - {fileID: 4300000, guid: ed7b34fa62b9e56479de94782266db1f, type: 3}
+  - {fileID: 4300000, guid: 058c36eca564dd346b91a940c377217c, type: 3}
+  - {fileID: 4300000, guid: 8ed5c8f4dd70aff4d9438f5c9fc907c8, type: 3}
+  - {fileID: 4300000, guid: ceef6510fd3ad97458fd561b272e4dcb, type: 3}
 --- !u!114 &3087360829876059722
 MonoBehaviour:
   m_ObjectHideFlags: 0

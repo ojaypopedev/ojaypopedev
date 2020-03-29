@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using StayingMythical.Reference;
 
 public class UI_Inventory : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class UI_Inventory : MonoBehaviour
     [SerializeField] Text text;
     void Start()
     {
-        player = StayingMythical.player;
+        player = GameObjects.player;
     }
 
     // Update is called once per frame

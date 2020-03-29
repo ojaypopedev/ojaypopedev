@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using cakeslice;
-using Mythical;
+using StayingMythical.Environment;
+using StayingMythical.Reference;
 public class Interractable : MonoBehaviour
 {
 
+    [SerializeField] public Mesh[] Models;
     Environment.Obstacles type;
     public Environment.Obstacles Type { get { return type; } }
     playerController player;
@@ -44,10 +46,22 @@ public class Interractable : MonoBehaviour
                 break;
         }
         
-        player = StayingMythical.player;
+        player = GameObjects.player;
 
         InventoryObject = getInventoryObject(type);
 
+    }
+    public void chooseRandomModel()
+    {
+        if (Models.Length != 0)
+        {
+            if(GetComponent<MeshFilter>())
+            {
+                int RandomModelIndex = Mathf.RoundToInt(Random.Range(0, Models.Length));
+                GetComponent<MeshFilter>().mesh = Models[RandomModelIndex];
+            }
+          
+        }
     }
 
     public void OutlineObject(bool active)
@@ -63,15 +77,26 @@ public class Interractable : MonoBehaviour
 
     public virtual void Process(bool Destroy)
     {
-        player.SetInventory(InventoryObject);
+        Process(Destroy, true);
+    }
 
-        if(Destroy)
+
+    public virtual void Process(bool Destroy, bool Player)
+    {
+        if(player)
+        {
+           
+           player.SetInventory(InventoryObject);
+        }
+     
+        if (Destroy)
         {
             player.DestroyAndRemoveFromCollisions(gameObject);
         }
-       
+
         Debug.Log(type.ToString() + "has been processed.");
     }
+
 
     public InventoryObject getInventoryObject(Environment.Obstacles type)
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mythical;
+using StayingMythical.Environment;
 
 public class InterractableRock : Interractable
 {
@@ -9,16 +9,22 @@ public class InterractableRock : Interractable
     void Start()
     {
         setupInterractable(Environment.Obstacles.Rock);
+        chooseRandomModel();
     }
 
     // Update is called once per frame
     void Update()
     {
         
-    }
+    }  
+
+     public override void Process(bool Destroy, bool player)
+     {
+       base.Process(Destroy, player);
+     }
 
     public override void Process()
     {
-        base.Process(false);
+        base.Process(false,true);
     }
 }

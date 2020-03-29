@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using StayingMythical.Reference;
 
 public class Stamina : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Stamina : MonoBehaviour
     void Start()
     {
         meter = GetComponent<UI_Meter>();
-        player = StayingMythical.player;
+        player = GameObjects.player;
     }
 
     // Update is called once per frame
